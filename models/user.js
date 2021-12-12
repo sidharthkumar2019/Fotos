@@ -1,4 +1,3 @@
-const { boolean } = require('joi');
 const Joi = require('joi');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -44,7 +43,15 @@ function validateUser (user) {
     return schema.validate(user);
 }
 
+function validateMe (user) {
+    const schema = Joi.object({
+        email: Joi.string().min(5).max(50).required().email()
+    });
+    return schema.validate(user);
+}
+
 const User = mongoose.model('User', userSchema);
 
 exports.User = User;
 exports.validate = validateUser;
+exports.validateMe = validateMe;

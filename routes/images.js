@@ -3,6 +3,7 @@ const router = express.Router();
 const {Image, validate} = require('../models/image');
 const {Category} = require('../models/category');
 const multer = require('multer');
+const auth = require('../middleware/auth');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -42,8 +43,7 @@ router.get('/:id', async(req, res)=> {
 });
 
 
-router.post('/', upload.single('img'), async(req, res)=> {
-
+router.post('/', auth, upload.single('img'), async(req, res)=> {
     const error = validate(req.body); 
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -53,7 +53,7 @@ router.post('/', upload.single('img'), async(req, res)=> {
     const image = new Image({
         name: req.body.name,
         description: req.body.description,
-        userId: req.body.userId,
+        owner: req.body.userId,
         img: req.file.path,
         category: {
             _id: category._id,
@@ -66,15 +66,22 @@ router.post('/', upload.single('img'), async(req, res)=> {
     res.send(image);
 });
 
-router.put('/name/:id', async(req, res)=> {
+router.put('/:id', auth, async(req, res)=> {
     const image = await Image.findById(req.params.id);
-    console.log(image.userId, req.body.userId);
     if ( image.userId != req.body.userId ) 
         return res.status(400).send('This is not an image uploaded by you.');
 
-    image.name = req.body.name;
+    if (req.body.name) image.name = req.body.name;
+    if (req.body.description) image.description = req.body.description;
+
     await image.save();
     res.send(image);
 });
 
+router.delete('/:id', auth, async(req, res)=> {
+    const image = await Image.findByIdAndDelete(req.params.id);
+    if ( !image ) return res.status(404).send('Image with given id was not found.');
+
+    res.send(image);
+});
 module.exports = router;

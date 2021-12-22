@@ -32,7 +32,7 @@ const upload = multer({
 router.get('/', async(req, res)=> {
     const images = await Image
         .find({})
-        .select('img');
+        .select(['name', 'description', 'img', 'category']);
     res.send(images);   
 });
 

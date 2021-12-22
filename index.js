@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 const app = express();
+const expressLayouts = require('express-ejs-layouts');
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, ()=> console.log(`listening to port ${port}...`));
@@ -16,6 +17,7 @@ const users = require('./routes/users');
 const authenticate = require('./routes/authenticate');
 const images = require('./routes/images');
 
+app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', './views');   
 app.use(bodyParser.urlencoded({ extended: false }));

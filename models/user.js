@@ -45,7 +45,7 @@ function validateUser (user) {
 
 function validateMe (user) {
     const schema = Joi.object({
-        email: Joi.string().min(5).max(50).required().email()
+        _id: Joi.string().required()
     });
     return schema.validate(user);
 }

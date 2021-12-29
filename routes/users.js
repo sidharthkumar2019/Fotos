@@ -4,16 +4,17 @@ const {User, validate, validateMe} = require('../models/user');
 const bcrypt = require('bcrypt');
 const auth = require('../middleware/auth');
 
-router.get('/me', auth, async(req,res)=>{
+router.get('/me',  async(req,res)=>{
     const { error } = validateMe(req.body); 
     if (error) return res.status(400).send(error.details[0].message);
 
-    const user = await User.findOne({email: req.body.email}).select('-password');
+    const user = await User.findOne({_id: req.body._id}).select('-password');
+    if (!user) return res.status(400).send('No such user exists');
+    console.log('In users model, ', user);
     res.send(user);
 });
 
 router.post('/', async(req, res)=> {
-    // console.log(req.body);
 
     const { error } = validate(req.body); 
     if (error) return res.status(400).send(error.details[0].message);

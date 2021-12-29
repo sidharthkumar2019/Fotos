@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
+const axios = require('axios');
 
 router.post('/', async(req, res)=> {
     const {error} = validateAuth(req.body);
@@ -15,7 +16,14 @@ router.post('/', async(req, res)=> {
     if (!validPass) return res.status(400).send('Invalid user or password.');
 
     const token = user.generateAuthToken();
-    res.send(token);
+    
+    res.cookie('o-auth-token', token, {
+        maxAge: 10*24*60*60*1000,
+        httpOnly: true
+    });
+    const result = await axios.get('http://localhost:3000/api/images');
+    const images = result.data;
+    res.render('index', { images: images, layout: './layouts/layout-loggedin'});
 });
 
 function validateAuth(req) {

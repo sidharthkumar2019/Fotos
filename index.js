@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
+const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, ()=> console.log(`listening to port ${port}...`));
@@ -28,5 +29,6 @@ app.use('/api/users',users);
 app.use('/api/authenticate', authenticate);
 app.use('/api/images', images);
 app.use('/uploads', express.static('uploads'));
+app.use(cookieParser());
 
 module.exports = server;

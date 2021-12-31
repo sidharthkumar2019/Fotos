@@ -1,1 +1,23 @@
-<h2>Upload Form</h2>
+<div class="container" style="width: 69%;">
+    <form action="http://localhost:3000/api/images" method="POST">
+
+        <div class="input-group mb-3">
+            <p class="input-group-text border-1">Title</p>
+            <input type="text" class="form-control rounded" name="name"/>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text border-1">Description</span>
+            <textarea class="form-control rounded" aria-label="With textarea" name="description">
+                Enter a description for your image.
+            </textarea>
+        </div>
+        
+        <div class="input-group mb-3">
+            <label class="input-group-text border-1" for="inputGroupFile01">Upload</label>
+            <input type="file" class="form-control" id="inputGroupFile01" accept="image/*" name="img" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Submit</button>
+    </form>
+</div>

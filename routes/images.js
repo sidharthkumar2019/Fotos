@@ -67,6 +67,7 @@ router.post('/', auth, upload.single('img'), async(req, res)=> {
 });
 
 router.put('/:id', auth, async(req, res)=> {
+    // user can update only that image which was uploaded by him
     const image = await Image.findById(req.params.id);
     if ( image.userId != req.body.userId ) 
         return res.status(400).send('This is not an image uploaded by you.');
@@ -79,9 +80,13 @@ router.put('/:id', auth, async(req, res)=> {
 });
 
 router.delete('/:id', auth, async(req, res)=> {
-    const image = await Image.findByIdAndDelete(req.params.id);
+    // user can delete only that image which was uploaded by him
+    let image = await Image.findById(req.params.id);
     if ( !image ) return res.status(404).send('Image with given id was not found.');
+    if ( image.userId != req.body.userId ) 
+        return res.status(400).send('This is not an image uploaded by you.');
 
+    image = await Image.deleteOne({_id: image._id});
     res.send(image);
 });
 module.exports = router;

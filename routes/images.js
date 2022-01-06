@@ -5,6 +5,7 @@ const {Category} = require('../models/category');
 const multer = require('multer');
 const auth = require('../middleware/auth');
 
+// set storage engine
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, './uploads');
@@ -14,6 +15,7 @@ const storage = multer.diskStorage({
     }
 });
 
+// To check file type
 const fileFilter = (req, file, cb)=> {
     // reject 
     if ( file.mimetype==='image/jpeg' || file.mimetype==='image/png' )
@@ -21,6 +23,7 @@ const fileFilter = (req, file, cb)=> {
     else cb(null, false);
 };
 
+// Init upload
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
@@ -50,10 +53,17 @@ router.post('/', auth, upload.single('img'), async(req, res)=> {
     const category = await Category.findOne({_id: req.body.categoryId});
     if (!category) return res.status(400).send('Invalid category');
 
+    let uid;
+    if ( req.body.userId )  uid = req.body.userId;
+    else {
+        // parse the jwt in cookies to get uid
+        uid = parseJwt(req.cookies['o-auth-token'])._id;
+    }
+
     const image = new Image({
         name: req.body.name,
         description: req.body.description,
-        owner: req.body.userId,
+        userId: uid,
         img: req.file.path,
         category: {
             _id: category._id,
@@ -63,7 +73,7 @@ router.post('/', auth, upload.single('img'), async(req, res)=> {
 
     await image.save();
 
-    res.send(image);
+    res.redirect('http://localhost:3000/')
 });
 
 router.put('/:id', auth, async(req, res)=> {
@@ -89,4 +99,15 @@ router.delete('/:id', auth, async(req, res)=> {
     image = await Image.deleteOne({_id: image._id});
     res.send(image);
 });
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/fer-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
+
 module.exports = router;

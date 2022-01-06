@@ -1,5 +1,5 @@
 <div class="container" style="width: 69%;">
-    <form action="http://localhost:3000/api/images" method="POST">
+    <form action="http://localhost:3000/api/images" method="POST" enctype="multipart/form-data">
 
         <div class="input-group mb-3">
             <p class="input-group-text border-1">Title</p>
@@ -16,6 +16,18 @@
         <div class="input-group mb-3">
             <label class="input-group-text border-1" for="inputGroupFile01">Upload</label>
             <input type="file" class="form-control" id="inputGroupFile01" accept="image/*" name="img" />
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="inputGroupSelect01">Category</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01" name="categoryId">
+              <option selected>Choose...</option>
+              <option value="61b0f4472381aeab56f9e350">Nature</option>
+              <option value="61b0f44e2381aeab56f9e352">Waterfall</option>
+              <option value="61b0f748a61b1fb405ccbf2e">Random</option>
+            </select>
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Submit</button>

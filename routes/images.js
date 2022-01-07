@@ -4,6 +4,7 @@ const {Image, validate} = require('../models/image');
 const {Category} = require('../models/category');
 const multer = require('multer');
 const auth = require('../middleware/auth');
+var fs = require('fs');
 
 // set storage engine
 const storage = multer.diskStorage({
@@ -35,7 +36,7 @@ const upload = multer({
 router.get('/', async(req, res)=> {
     const images = await Image
         .find({})
-        .select(['name', 'description', 'img', 'category']);
+        .select(['name', 'description', 'img', 'category', 'userId', 'likes', 'dislikes']);
     res.send(images);   
 });
 
@@ -73,7 +74,7 @@ router.post('/', auth, upload.single('img'), async(req, res)=> {
 
     await image.save();
 
-    res.redirect('http://localhost:3000/')
+    res.redirect('http://localhost:3000/');
 });
 
 router.put('/:id', auth, async(req, res)=> {
@@ -90,13 +91,27 @@ router.put('/:id', auth, async(req, res)=> {
 });
 
 router.delete('/:id', auth, async(req, res)=> {
-    // user can delete only that image which was uploaded by him
     let image = await Image.findById(req.params.id);
     if ( !image ) return res.status(404).send('Image with given id was not found.');
-    if ( image.userId != req.body.userId ) 
-        return res.status(400).send('This is not an image uploaded by you.');
+    
+    let uid;
+    if ( req.body.userId )  uid = req.body.userId;
+    else {
+        // parse the jwt in cookies to get uid
+        uid = parseJwt(req.headers['o-auth-token'])._id;
+    }
+    if ( image.userId != uid ) 
+        // return res.status(401).send('This is not an image uploaded by you.');
+        return;
 
+    // delete file named 'sample.txt'
+    fs.unlink(`${image.img}`, function (err) {
+        if (err) return res.send('No such image found');
+        // if no error, file has been deleted successfully
+        console.log('File deleted!');
+    });
     image = await Image.deleteOne({_id: image._id});
+    
     res.send(image);
 });
 

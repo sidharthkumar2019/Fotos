@@ -47,6 +47,16 @@ router.get('/addimage', async(req,res)=> {
     res.render('uploadimage', {layout: selectAptLayout(req)});
 });
 
+router.get('/deleteImage/:id', async(req, res)=> {
+    if (req.cookies['o-auth-token'] === undefined)
+        return res.status(401).send('You must be logged in to delete an image.');
+    
+    await axios.delete( `http://localhost:3000/api/images/${req.params.id}`, {
+        headers: {'o-auth-token': req.cookies['o-auth-token']}
+    });
+    res.redirect('/');
+});
+
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/fer-/g, '+').replace(/_/g, '/');

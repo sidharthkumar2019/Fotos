@@ -108,7 +108,6 @@ router.delete('/:id', auth, async(req, res)=> {
     fs.unlink(`${image.img}`, function (err) {
         if (err) return res.send('No such image found');
         // if no error, file has been deleted successfully
-        console.log('File deleted!');
     });
     image = await Image.deleteOne({_id: image._id});
     

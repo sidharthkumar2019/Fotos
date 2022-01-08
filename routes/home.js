@@ -9,7 +9,11 @@ router.get('/', async(req, res)=>{
     const result = await axios.get('http://localhost:3000/api/images');
     const images = result.data;
 
-    res.render('index', {images: images, layout: selectAptLayout(req)});
+    let userAuthenticated = "1234";
+    if ( req.cookies['o-auth-token'] != undefined )
+        userAuthenticated = String(parseJwt(req.cookies['o-auth-token'])._id);
+
+    res.render('index', {  user: userAuthenticated, images: images, layout: selectAptLayout(req)});
 });
 
 router.get('/about', (req, res)=> {

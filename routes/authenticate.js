@@ -23,7 +23,7 @@ router.post('/', async(req, res)=> {
     });
     const result = await axios.get('http://localhost:3000/api/images');
     const images = result.data;
-    res.render('index', { images: images, layout: './layouts/layout-loggedin'});
+    res.redirect('/');
 });
 
 function validateAuth(req) {
